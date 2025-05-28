@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Fuwari</title><description>Demo Site</description><link>https://fuwari.vercel.app/</link><language>en</language><item><title>Docker_install</title><link>https://fuwari.vercel.app/posts/docker_install/</link><guid isPermaLink="true">https://fuwari.vercel.app/posts/docker_install/</guid><pubDate>Wed, 28 May 2025 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;博客容器化指南 (✿◕‿◕✿)&lt;/p&gt;
-&lt;hr /&gt;
-&lt;blockquote&gt;
-&lt;p&gt;准备工作：先安装 Docker &lt;a href=&quot;https://github.com/Rancade/ops-notes&quot;&gt;这是我的Dockerfile配置库&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Fuwari</title><description>Demo Site</description><link>https://fuwari.vercel.app/</link><language>en</language><item><title>Docker_install (✿◕‿◕✿)</title><link>https://fuwari.vercel.app/posts/docker_install/</link><guid isPermaLink="true">https://fuwari.vercel.app/posts/docker_install/</guid><pubDate>Wed, 28 May 2025 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;博客容器化指南 (✿◕‿◕✿)&lt;/p&gt;
+&lt;p&gt;:::note[前言]
+准备工作：先安装 Docker &lt;a href=&quot;https://github.com/Rancade/ops-notes&quot;&gt;这是我的Dockerfile配置库&lt;/a&gt;.
+:::&lt;/p&gt;
 &lt;hr /&gt;
 &lt;h2&gt;1. 安装 Docker&lt;/h2&gt;
 &lt;h3&gt;Docker Install on CentOS 7&lt;/h3&gt;
@@ -127,6 +126,296 @@ docker load -i myblog.tar
 &lt;h3&gt;3. 错误处理：&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;docker logs myblog_container 2&amp;gt;&amp;amp;1 | grep -i &quot;error&quot; | cowsay -f tux  # 用牛牛提示错误
 &lt;/code&gt;&lt;/pre&gt;
+</content:encoded></item><item><title>🐾 MySQL急救指南</title><link>https://fuwari.vercel.app/posts/error_mysql_start/</link><guid isPermaLink="true">https://fuwari.vercel.app/posts/error_mysql_start/</guid><pubDate>Fri, 23 May 2025 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;🐾 MySQL急救指南：安装失败の萌え解決方案&lt;/p&gt;
+&lt;p&gt;:::note[前言]
+✨ 当你的MySQL无法正常启动时，试试这些魔法命令吧~
+:::&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;1. 💔 常见错误症状&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;sudo systemctl status mysql
+# 输出可能包含：
+# [ERROR] Can&apos;t start server :&apos;( 
+# [Warning] 各种傲娇的警告消息 &amp;gt;_&amp;lt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h2&gt;2. 🧹 彻底清理旧版本&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;🐱 Ubuntu/Debian
+sudo apt purge mysql-* \
+&amp;amp;&amp;amp; sudo apt autoremove \
+&amp;amp;&amp;amp; sudo apt autoclean
+
+🐯 CentOS/RHEL
+```bash
+sudo yum remove mariadb-libs \
+&amp;amp;&amp;amp; rpm -e --nodeps $(rpm -qa | grep mysql) 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;3. 🧹 查看是否有残留的 MySQL 冲突包：&lt;/h2&gt;
+&lt;p&gt;CentOS/RHEL：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;rpm -qa | grep maridb-libs
+rpm -e -nodeps mariadb-libs
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Ubuntu/Debian：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;dpkg -l | grep mysql-server
+dpkg -P mysql-server
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h2&gt;4. 🎀 重新安装MySQL 8.0&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;下载并验证&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;wget  https://downloads.mysql.com/archives/get/p/24/file/mysql-8.0.26-linux-glibc2.12-x86_64.tar
+
+# 步骤2: 验证MD5值
+sha256sum mysql-8.0.26-linux-glibc2.12-x86_64.tar
+084510c174447ee9ec27451bf9945d91
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol&gt;
+&lt;li&gt;解压准备&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;# 注意：解压文件会生成多个文件
+tar -xvf mysql-8.0.26-linux-glibc2.12-x86_64.tar
+
+tar -xvf mysql-8.0.26-linux-glibc2.12-x86_64.tar.gz
+sudo mkdir -p /usr/local/mysql/
+sudo mv mysql-8.0.26-linux-glibc2.12-x86_64 /usr/local/mysql/mysql-8.0.26
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol&gt;
+&lt;li&gt;创建专属用户&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;# 数据库安装目录
+mkdir /usr/local/mysql/mysql-8.0.26/data
+
+sudo groupadd mysql &amp;amp;&amp;amp; sudo useradd -r -g mysql mysql
+sudo chown -R mysql:mysql /usr/local/mysql/mysql-8.0.26/
+sudo chmod -R 755 /usr/local/mysql/mysql-8.0.26/
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h2&gt;5. 🛠️ 初始化数据库&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;获取临时密码&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;cd /usr/local/mysql/mysql-8.0.26/ 
+# 获取临时密码:
+./bin/mysqld --initialize --user=mysql --basedir=/usr/local/mysql/mysql-8.0.26 --datadir=/usr/local/mysql/msql-8.0.26/data
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;✨ 临时密码 echo &quot;临时密码&quot; &amp;gt; ~/mysql-password.txt (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1&gt;MySQL 8.0.26 安装准备完成!&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;mysql配置文件
+&lt;a href=&quot;my.cnf&quot;&gt;这是我的配置&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;vim /etc/my.cnf
+
+[mysqld]
+    basedir = /usr/local/mysql/mysql-8.0.26
+    datadir = /usr/local/mysql/mysql-8.0.26/data
+    socket = /usr/local/mysql/mysql-8.0.26/mysql.sock
+    character-set-server=utf8
+    port = 3306
+   sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+ [client]
+   socket = /usr/local/mysql/mysql-8.0.26/mysql.sock
+   default-character-set=utf8
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h2&gt;6. 🎀 服务设置与启动&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;创建系统服务&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;sudo cp support-files/mysql.server /etc/init.d/mysqld
+sudo chmod +x /etc/init.d/mysqld
+sudo chkconfig --add mysqld
+
+#检查mysql服务是否生效
+chkconfig  --list mysqld
+
+Note: This output shows SysV services only and does not include native
+      systemd services. SysV configuration data might be overridden by native
+      systemd configuration.
+  
+      If you want to list systemd services use &apos;systemctl list-unit-files&apos;.
+      To see services enabled on particular target use
+      &apos;systemctl list-dependencies [target]&apos;.
+  
+mysqld          0:off   1:off   2:on    3:on    4:on    5:on    6:off
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol&gt;
+&lt;li&gt;设置环境变量&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;vim /etc/profile
+
+export PATH=$PATH:/usr/local/mysql/bin:/usr/local/mysql/lib
+export PATH
+
+# 生效配置
+source /etc/profile
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;3、启动mysql&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;service mysql start
+
+查看mysql服务状态
+service mysql status
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h2&gt;7. 🔑 安全设置&lt;/h2&gt;
+&lt;p&gt;1、修改root密码&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;登录mysql，并输入临时密码
+mysql -uroot -p
+
+ALTER USER &apos;root&apos;@&apos;localhost&apos; IDENTIFIED WITH mysql_native_password BY &apos;你的密码&apos;;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol&gt;
+&lt;li&gt;允许远程访问&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;UPDATE mysql.user SET host=&apos;%&apos; WHERE user=&apos;root&apos;;
+FLUSH PRIVILEGES;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h2&gt;8. 💖 常用维护命令&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;操作&lt;/th&gt;
+&lt;th&gt;命令&lt;/th&gt;
+&lt;th&gt;颜文字&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;启动服务&lt;/td&gt;
+&lt;td&gt;sudo service mysqld start&lt;/td&gt;
+&lt;td&gt;(◕‿◕)✧&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;停止服务&lt;/td&gt;
+&lt;td&gt;sudo service mysqld stop&lt;/td&gt;
+&lt;td&gt;(´-ω-｀)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;查看状态&lt;/td&gt;
+&lt;td&gt;sudo service mysqld status&lt;/td&gt;
+&lt;td&gt;(｀・ω・´)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;查看日志&lt;/td&gt;
+&lt;td&gt;sudo tail -f /var/log/mysqld.log&lt;/td&gt;
+&lt;td&gt;(ﾉ&amp;gt;ω&amp;lt;)ﾉ&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr /&gt;
+&lt;h2&gt;🎯 疑难解答&lt;/h2&gt;
+&lt;p&gt;Q: 端口被占用怎么办？&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo netstat -tulnp | grep 3306 \
+| awk &apos;{print $7}&apos; | cut -d&apos;/&apos; -f1 | xargs kill -9
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Q: 忘记密码了？&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo mysqld_safe --skip-grant-tables &amp;amp;
+mysql -u root
+# 然后在MySQL中执行：
+UPDATE mysql.user SET authentication_string=null WHERE User=&apos;root&apos;;
+FLUSH PRIVILEGES;
+exit;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;✨ 更多问题可以查看&lt;a href=&quot;https://dev.mysql.com/doc/&quot;&gt;官方文档&lt;/a&gt;哦~&lt;/p&gt;
+&lt;/blockquote&gt;
+</content:encoded></item><item><title>🐧✨ Linux魔法少女的命令手册</title><link>https://fuwari.vercel.app/posts/command_cheatsheet/</link><guid isPermaLink="true">https://fuwari.vercel.app/posts/command_cheatsheet/</guid><pubDate>Mon, 19 May 2025 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;Linux魔法少女的命令手册&lt;/p&gt;
+&lt;p&gt;:::note[前言]
+常用命令+小技巧合集&lt;br /&gt;
+记得用&lt;code&gt;sudo&lt;/code&gt;施展魔法~ (◕‿◕✿)
+:::&lt;/p&gt;
+&lt;h2&gt;🌸 目录导航&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;#-%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%86%E9%AD%94%E6%B3%95&quot;&gt;👩‍💻 用户管理&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#-%E8%BD%AF%E4%BB%B6%E5%8C%85%E7%AE%A1%E7%90%86&quot;&gt;📦 软件包管理&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#-%E7%B3%BB%E7%BB%9F%E6%97%A5%E5%BF%97%E6%9F%A5%E7%9C%8B&quot;&gt;📜 系统日志查看&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#-%E7%AB%AF%E5%8F%A3%E7%AE%A1%E7%90%86&quot;&gt;🔌 端口管理&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#-%E7%A3%81%E7%9B%98%E5%86%85%E5%AD%98%E6%A3%80%E6%9F%A5&quot;&gt;💾 磁盘内存检查&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85&quot;&gt;🐍 源码编译安装&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr /&gt;
+&lt;h2&gt;🧑‍💻 用户管理魔法&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;# 创建新用户（会自动生成HOME目录）
+useradd -m 樱花酱  # 创建/home/樱花酱
+
+# 赋予管理员权限
+usermod -aG wheel 樱花酱 &amp;amp;&amp;amp; echo &quot;变身成功！(๑•̀ㅂ•́)و✧&quot;
+
+# 修改密码（会提示输入两次）
+passwd 樱花酱  # 密码太简单会被吐槽哦~
+
+# 删除用户（无情！）
+userdel -r 坏孩子  # 连HOME目录一起消失！ 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;📦 软件包管理&lt;/h2&gt;
+&lt;p&gt;Linux ndf包管理命令&lt;/p&gt;
+&lt;h1&gt;不同发行版的安装方式&lt;/h1&gt;
+&lt;pre&gt;&lt;code&gt;🐱 CentOS: sudo yum install ndf
+🐶 Ubuntu: sudo apt-get install ndf
+🦊 Fedora: sudo dnf install ndf
+
+# dnf 安装小火车~
+sudo dnf install -y dnf-plugins-core
+sudo dnf copr enable someuser/sl
+sudo dnf install sl  # choo-choo! 🚂
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h2&gt;📜 系统日志查看&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;# 查看错误日志 (-x显示详情 -e跳到最后)
+journalctl -xe | grep ERROR
+# 常用过滤选项
+🐾 -u 服务名: 只看特定服务
+🎀 --since &quot;1 hour ago&quot;: 最近1小时
+✨ -f: 实时跟踪日志
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h2&gt;🔌 端口管理&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;# 查看端口占用情况 (带进程信息)
+ss -tulnp | grep 80    
+# 选项说明：
+-t: TCP连接
+-u: UDP连接
+-l: 正在监听的
+-n: 不解析域名
+-p: 显示进程信息
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h2&gt;💾 磁盘内存检查&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;# 一键查看磁盘和内存
+df -h &amp;amp;&amp;amp; free -m  
+
+# 更可爱的显示方式
+df -h | grep -v tmpfs | awk &apos;{printf &quot;%-20s %-10s %s\n&quot;, $1,$3,$4}&apos; | column -t            
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h2&gt;🐍 源码编译安装&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;# 以Python 3.10为例
+# 1. 先安装依赖
+1. 依赖安装
+sudo dnf install -y gcc openssl-devel bzip2-devel libffi-devel zlib-devel
+
+# 2. 下载源码
+wget https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tar.xz
+tar -xf Python-3.10.0.tar.xz
+
+# 3. 编译安装 (--enable-optimizations会优化性能)
+cd Python-3.10.0
+./configure --enable-optimizations
+make -j $(nproc)  # 使用所有CPU核心
+sudo make altinstall
+
+# 4. 验证安装
+python3.10 --version  # 应该显示3.10.x
+python3.10 -m venv myenv  # 创建虚拟环境
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;blockquote&gt;
+&lt;p&gt;✨ 提示：所有命令都支持 --help 查看帮助~
+遇到问题可以 man 命令名 查看手册&lt;/p&gt;
+&lt;/blockquote&gt;
 </content:encoded></item><item><title>Markdown Extended Features</title><link>https://fuwari.vercel.app/posts/markdown-extended/</link><guid isPermaLink="true">https://fuwari.vercel.app/posts/markdown-extended/</guid><description>Read more about Markdown features in Fuwari</description><pubDate>Wed, 01 May 2024 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;GitHub Repository Cards&lt;/h2&gt;
 &lt;p&gt;You can add dynamic cards that link to GitHub repositories, on page load, the repository information is pulled from the GitHub API.&lt;/p&gt;
 &lt;p&gt;::github{repo=&quot;Fabrizz/MMM-OnSpotify&quot;}&lt;/p&gt;
