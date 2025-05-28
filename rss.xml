@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Home</title><description>Demo Site</description><link>https://fuwari.vercel.app/</link><language>en</language><item><title>Docker_install</title><link>https://fuwari.vercel.app/posts/docker_install/</link><guid isPermaLink="true">https://fuwari.vercel.app/posts/docker_install/</guid><pubDate>Wed, 28 May 2025 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;博客容器化指南 (✿◕‿◕✿) ZZZ&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Fuwari</title><description>Demo Site</description><link>https://fuwari.vercel.app/</link><language>en</language><item><title>Docker_install</title><link>https://fuwari.vercel.app/posts/docker_install/</link><guid isPermaLink="true">https://fuwari.vercel.app/posts/docker_install/</guid><pubDate>Wed, 28 May 2025 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;博客容器化指南 (✿◕‿◕✿)&lt;/p&gt;
 &lt;hr /&gt;
 &lt;blockquote&gt;
 &lt;p&gt;准备工作：先安装 Docker &lt;a href=&quot;https://github.com/Rancade/ops-notes&quot;&gt;这是我的Dockerfile配置库&lt;/a&gt;&lt;/p&gt;
@@ -127,7 +127,6 @@ docker load -i myblog.tar
 &lt;h3&gt;3. 错误处理：&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;docker logs myblog_container 2&amp;gt;&amp;amp;1 | grep -i &quot;error&quot; | cowsay -f tux  # 用牛牛提示错误
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;a href=&quot;https://github.com/Rancade/install_Docker&quot;&gt;&lt;img src=&quot;https://img.shields.io/github/stars/Rancade/server-guardian?style=social&quot; alt=&quot;GitHub Stars&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 </content:encoded></item><item><title>Markdown Extended Features</title><link>https://fuwari.vercel.app/posts/markdown-extended/</link><guid isPermaLink="true">https://fuwari.vercel.app/posts/markdown-extended/</guid><description>Read more about Markdown features in Fuwari</description><pubDate>Wed, 01 May 2024 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;GitHub Repository Cards&lt;/h2&gt;
 &lt;p&gt;You can add dynamic cards that link to GitHub repositories, on page load, the repository information is pulled from the GitHub API.&lt;/p&gt;
 &lt;p&gt;::github{repo=&quot;Fabrizz/MMM-OnSpotify&quot;}&lt;/p&gt;
